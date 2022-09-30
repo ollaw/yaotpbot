@@ -4,6 +4,7 @@ from typing import List, Tuple
 
 import boto3
 from boto3.dynamodb.conditions import Key
+from dynamodb_encryption_sdk.encrypted.resource import EncryptedResource
 
 from ..constant import (
     DYNAMO__KEY_ID,
@@ -12,16 +13,19 @@ from ..constant import (
     DYNAMO_ENDPOINT_ENV_VAR,
     DYNAMO_TABLE_NAME,
 )
+from ..helpers.crypto import wrapped_material_provider
 
 logger = logging.getLogger(__name__)
-client = boto3.resource("dynamodb", endpoint_url=os.getenv(DYNAMO_ENDPOINT_ENV_VAR)).Table(DYNAMO_TABLE_NAME)
+
+dynamo = boto3.resource("dynamodb", endpoint_url=os.getenv(DYNAMO_ENDPOINT_ENV_VAR))
+client_crypto = EncryptedResource(resource=dynamo, materials_provider=wrapped_material_provider).Table(
+    DYNAMO_TABLE_NAME
+)
 
 
 def get(chat_id: str, otp_name: str) -> str:
-    if query := client.query(
+    if query := client_crypto.query(
         KeyConditionExpression=Key("id").eq(f"{chat_id}") & Key("name").eq(f"{otp_name}"),
-        ProjectionExpression="#n,seed",
-        ExpressionAttributeNames={"#n": "name"},
     )["Items"]:
         return query[0]["seed"]
     else:
@@ -30,8 +34,7 @@ def get(chat_id: str, otp_name: str) -> str:
 
 
 def put(chat_id: str, otp_name: str, seed: str):
-    client.put_item(
-        TableName=DYNAMO_TABLE_NAME,
+    client_crypto.put_item(
         Item={
             DYNAMO__KEY_ID: f"{chat_id}",
             DYNAMO__KEY_NAME: f"{otp_name}",
@@ -41,23 +44,21 @@ def put(chat_id: str, otp_name: str, seed: str):
 
 
 def exists(chat_id: str, otp_name: str) -> bool:
-    query = client.query(
+    query = client_crypto.query(
         KeyConditionExpression=Key("id").eq(f"{chat_id}") & Key("name").eq(f"{otp_name}"),
-        ProjectionExpression="#n,seed",
-        ExpressionAttributeNames={"#n": "name"},
     )
     return "Items" in query
 
 
 def delete(chat_id: str, otp_name: str) -> None:
-    client.delete_item(Key={"id": f"{chat_id}", "name": f"{otp_name}"})
+    client_crypto.delete_item(Key={"id": f"{chat_id}", "name": f"{otp_name}"})
 
 
 def load(chat_id: str) -> List[Tuple[str, str]]:
-    if query := client.query(
+    if query := client_crypto.query(
         KeyConditionExpression=Key("id").eq(f"{chat_id}"),
-        ProjectionExpression="#n,seed",
-        ExpressionAttributeNames={"#n": "name"},
+        # ProjectionExpression="#n,seed",
+        # ExpressionAttributeNames={"#n": "name"},
     )["Items"]:
         return [(k["name"], k["seed"]) for k in query]
     return []

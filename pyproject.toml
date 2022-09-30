@@ -10,6 +10,7 @@ python-telegram-bot = "^13.13"
 boto3 = "^1.24.60"
 pyotp = "^2.6.0"
 flake8 = "^5.0.4"
+dynamodb-encryption-sdk = "^3.1.0"
 
 [tool.black]
 line-length = 119

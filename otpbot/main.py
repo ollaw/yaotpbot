@@ -1,7 +1,6 @@
 import logging
 import os
 
-import boto3
 from telegram.ext import CallbackQueryHandler, CommandHandler, Updater
 
 from .cmds.help import cmd_help
@@ -24,26 +23,17 @@ from .handlers.delete import cbk_rm, cbk_rm_confirm_n, cbk_rm_confirm_y, cbk_rm_
 from .handlers.list import cbk_ls
 from .handlers.show import cbk_refresh, cbk_show
 from .handlers.start import cbk_home
+from .helpers.env import check_environments
 
 logger = logging.getLogger(__name__)
 
 
 def main() -> None:
 
+    check_environments()
+
     """Start the bot."""
-    if (token := os.getenv(TOKEN_ENV_VAR)) is None:
-        logger.error(f"Variable {TOKEN_ENV_VAR} must be set.")
-        exit(-1)
-
-    sts = boto3.client("sts")
-    try:
-        sts.get_caller_identity()
-        logger.info("Valid AWS credentials found.")
-    except Exception:
-        logger.error("AWS credentials are not set or invalid.")
-        exit(-1)
-
-    updater = Updater(token)
+    updater = Updater(os.getenv(TOKEN_ENV_VAR))
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
