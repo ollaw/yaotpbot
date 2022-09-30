@@ -1,0 +1,49 @@
+TOKEN_ENV_VAR = "TELEGRAM_API_TOKEN"
+DYNAMO_ENDPOINT_ENV_VAR = "DYNAMO_DB_ENDPOINT"
+
+CMD_START = "start"
+CMD_HELP = "help"
+CMD_ADD = "add"
+CMD_CANCEL = "cancel"
+
+BTN_ADD_LABEL = "Add"
+BTN_REMOVE_LABEL = "Delete"
+BTN_LIST_LABEL = "List"
+BTN_REFRESH_LABEL = "Refresh"
+BTN_BACK_LABEL = "« Go back"
+
+BTN_REMOVE_Y_LABEL = "Yep"
+BTN_REMOVE_N_LABEL = "Nope"
+
+
+CBK_DATA_ADD = "cbk_add"
+CBK_DATA_REMOVE = "cbk_rm"
+CBK_DATA_REMOVE_LIST = "cbk_rm_ls"
+CBK_DATA_LIST = "cbk_ls"
+CBK_DATA_SHOW = "cbk_show"
+CBK_DATA_REFRESH = "cbk_refresh"
+CBK_DATA_HOME = "cbk_home"
+CBK_DATA_RM_PREFIX = "cbk_cnfrm"
+CBK_DATA_RM_Y = f"{CBK_DATA_RM_PREFIX}_y"
+CBK_DATA_RM_N = f"{CBK_DATA_RM_PREFIX}_n"
+
+LIST_ROW_LENGTH = 3
+
+# States for conversation handler
+ST_ADD_NAME = 0
+ST_ADD_NAME_ERR = 1
+ST_ADD_OPT = 2
+ST_ADD_BROKEN = 3
+ST_RM_NAME = 4
+ST_RM_CONFIRM = 5
+ST_RM_CONFIRM_Y = 6
+ST_RM_CONFIRM_N = 7
+
+USER_DATA_KEY_ADD_NAME = "add-opt-name-key"
+USER_DATA_KEY_ADD_MSG_ID = "add-msg-id-key"
+USER_DATA_KEY_DEL_NAME = "del-msg-id-key"
+
+DYNAMO_TABLE_NAME = "yaotpbot-table"
+DYNAMO__KEY_ID = "id"
+DYNAMO__KEY_NAME = "name"
+DYNAMO__KEY_SEED = "seed"

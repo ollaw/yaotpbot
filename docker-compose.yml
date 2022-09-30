@@ -1,0 +1,34 @@
+version: '3.1'
+services:
+  bot:
+    build:
+      context: .
+    user: root
+    environment:
+      - TELEGRAM_API_TOKEN
+      - AWS_PROFILE
+      - AWS_DEFAULT_REGION=eu-central-1
+      - DYNAMO_DB_ENDPOINT=http://dynamodb:8000
+    volumes:
+      - $HOME/.aws/credentials:/root/.aws/credentials:ro
+    depends_on:
+      - "dynamodb"
+      - "init-dynamodb"
+  init-dynamodb:
+    image: amazon/aws-cli
+    environment:
+      - AWS_DEFAULT_REGION=eu-central-1
+      - AWS_PROFILE
+    command: dynamodb create-table --cli-input-json file:///tmp/localdb-table.json --endpoint-url http://dynamodb:8000
+    volumes:
+      - $HOME/.aws/credentials:/root/.aws/credentials:ro
+      - ./localdb-table.json:/tmp/localdb-table.json:ro
+    depends_on:
+      - "dynamodb"
+  dynamodb:
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ."
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb
+    ports:
+      - "8000:8000"
+    working_dir: /home/dynamodblocal
