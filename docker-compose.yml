@@ -9,6 +9,8 @@ services:
       - AWS_PROFILE
       - AWS_DEFAULT_REGION=eu-central-1
       - DYNAMO_DB_ENDPOINT=http://dynamodb:8000
+      - DYNAMO_AES_ENCRYPTION_KEY='4YY5yXS6nUrS8Z/6lDNGAg=='
+      - DYNAMO_AES_SIGN_KEY='6PjwVFTXQqt1xbNrgxqJyg=='
     volumes:
       - $HOME/.aws/credentials:/root/.aws/credentials:ro
     depends_on:
