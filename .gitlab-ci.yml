@@ -11,11 +11,11 @@ cache:
   paths:
     - .venv
 
-
 stages:
-- lint
-- build
-- test
+  - lint
+  - build
+  - test
+  - push
 
 format:
   stage: lint
@@ -28,7 +28,6 @@ format:
     - poetry install
   script:
     - make format-check
-
 
 type-check:
   stage: lint
@@ -44,7 +43,7 @@ type-check:
   cache:
     key: check-cache
     paths:
-    - .mypy_cache
+      - .mypy_cache
 
 build:
   stage: build
@@ -57,8 +56,23 @@ build:
   script:
     - poetry build
 
+docker:
+  stage: push
+  image: docker:20.10.10
+  services:
+    - docker:20.10.10-dind
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA --tag $CI_REGISTRY_IMAGE:latest .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
+  only:
+    - /^(\d+\.)?(\d+\.)?(\*|\d+)$/
+  except:
+    - branches
 
 sast:
   stage: test
 include:
-- template: Security/SAST.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
