@@ -19,5 +19,6 @@ spec:
     spec:
       containers:
         - name: main
+          image: main
           resources: {}
 status: {}
