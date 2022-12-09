@@ -16,6 +16,7 @@ stages:
   - build
   - test
   - push
+  - gitops
 
 format:
   stage: lint
@@ -28,6 +29,10 @@ format:
     - poetry install
   script:
     - make format-check
+  rules:
+    - changes:
+        - otpbot/**/*
+        - tests/**/*
 
 type-check:
   stage: lint
@@ -40,6 +45,10 @@ type-check:
     - poetry install
   script:
     - make type-check
+  rules:
+    - changes:
+        - otpbot/**/*
+        - tests/**/*
   cache:
     key: check-cache
     paths:
@@ -55,6 +64,14 @@ build:
     - poetry install
   script:
     - poetry build
+  rules:
+    - changes:
+        - otpbot/**/*
+
+sast:
+  stage: test
+include:
+  - template: Security/SAST.gitlab-ci.yml
 
 docker:
   stage: push
@@ -62,17 +79,45 @@ docker:
   services:
     - docker:20.10.10-dind
   script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
-    - docker pull $CI_REGISTRY_IMAGE:latest || true
-    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME --tag $CI_REGISTRY_IMAGE:latest .
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-    - docker push $CI_REGISTRY_IMAGE:latest
+    - echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} ${CI_REGISTRY} --password-stdin
+    - docker pull ${CI_REGISTRY_IMAGE}:latest || true
+    - docker build --cache-from ${CI_REGISTRY_IMAGE}:latest --tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME} --tag ${CI_REGISTRY_IMAGE}:latest .
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+    - docker push ${CI_REGISTRY_IMAGE}:latest
   only:
     - /^(\d+\.)?(\d+\.)?(\*|\d+)$/
   except:
     - branches
 
-sast:
-  stage: test
-include:
-  - template: Security/SAST.gitlab-ci.yml
+update-manifests:
+  stage: gitops
+  image:
+    name: alpine/git:v2.30.2
+    entrypoint: [""]
+  before_script:
+    - apk add curl bash
+    - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash -s /usr/local/bin/
+    - git clone "https://${GITLAB_USER_NAME}:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "${CI_COMMIT_SHA}"
+    - git config --global user.email "${GIT_USER_EMAIL:-$GITLAB_USER_EMAIL}"
+    - git config --global user.name "${GIT_USER_NAME:-$GITLAB_USER_NAME}"
+    - cd "${CI_COMMIT_SHA}/manifests"
+  script:
+    - kustomize edit set image main=${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+    - kustomize build . > ../gitops-artitfacts/manifest.yml
+  after_script:
+    - git add .
+    - |-
+      CHANGES=$(git status --porcelain | wc -l)
+
+      if [ "$CHANGES" -gt "0" ]; then
+        git status
+        git commit -m "Gitops - Bump ${CI_COMMIT_REF_NAME}"
+        git push -o ci.skip
+      else
+        echo "Nothing to commit"
+      fi
+
+  only:
+    - /^(\d+\.)?(\d+\.)?(\*|\d+)$/
+  except:
+    - branches
