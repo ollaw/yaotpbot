@@ -102,9 +102,12 @@ update-manifests:
     - git config --global user.name "${GIT_USER_NAME:-$GITLAB_USER_NAME}"
     - cd "${CI_COMMIT_SHA}/manifests"
   script:
+    - pwd
     - kustomize edit set image main=${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
     - kustomize build . > ../gitops-artitfacts/manifest.yml
   after_script:
+    - pwd
+    - cd ${CI_COMMIT_SHA}
     - git add .
     - |-
       CHANGES=$(git status --porcelain | wc -l)
