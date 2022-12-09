@@ -1,33 +1,25 @@
-[tool.poetry]
-name = "otpbot"
-version = "0.1.0"
-description = "A telegram bot used to generate OTP"
-authors = ["Gabriele Olla <ollagabriele@om.me>"]
-
-[tool.poetry.dependencies]
-python = "^3.8"
-python-telegram-bot = "^13.13"
-boto3 = "^1.24.60"
-pyotp = "^2.6.0"
-flake8 = "^5.0.4"
-dynamodb-encryption-sdk = "^3.1.0"
-
-[tool.black]
-line-length = 119
-
-[tool.isort]
-profile = "black"
-
-[tool.poetry.scripts]
-run-bot = "otpbot.main:main"
-
-[tool.poetry.dev-dependencies]
-black = {version = "^22.6.0", allow-prereleases = true}
-flake8 = "^5.0.4"
-pytest = "^5.2"
-mypy = "^0.971"
-isort = "^5.10.1"
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yaotpbot"
+description = "A telegram bot to generate OTPs"
+readme = "README.md"
+requires-python = ">=3.7"
+keywords = ["telegram-bot", "otp"]
+license = {text = "MIT"}
+dependencies = [
+    "python-telegram-bot >= 13.13",
+    "boto3 >= 1.24.60",
+    "pyotp >= 2.6.0",
+    "flake8 >= 5.0.4",
+    "dynamodb-encryption-sdk >= 3.1.0"
+]
+dynamic = ["version"]
+
+[tool.setuptools]
+py-modules = []
+
+[project.scripts]
+run-bot = "otpbot.main:main"

@@ -1,22 +1,13 @@
-FROM python:3-slim as python
-ENV PYTHONUNBUFFERED=true
+FROM --platform=$BUILDPLATFORM python:3.8-slim as builder
 WORKDIR /app
-
-FROM python as poetry
-ENV POETRY_HOME=/opt/poetry
-ENV POETRY_VIRTUALENVS_IN_PROJECT=true
-ENV PATH="$POETRY_HOME/bin:$PATH"
-RUN python -c 'from urllib.request import urlopen; print(urlopen("https://install.python-poetry.org").read().decode())' | python -
-COPY poetry.lock pyproject.toml ./
+RUN pip3 install --upgrade build
+COPY pyproject.toml pyproject.toml
 ADD otpbot otpbot
-RUN poetry install --no-interaction --no-ansi -vvv
-RUN poetry build
+RUN python3 -m build
 
-
-
-FROM python as runtime
-ENV PATH="/app/.venv/bin:$PATH"
-COPY --from=poetry /app/dist /app
+FROM --platform=$BUILDPLATFORM python:3.8-slim as runtime
+WORKDIR /app
+COPY --from=builder /app/dist/* /app
 RUN pip3 install *.whl
 RUN adduser --system --no-create-home yaoptuser
 
