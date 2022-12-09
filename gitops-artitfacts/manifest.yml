@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: yaotpbot
+  name: yaotpbot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yaotpbot
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: yaotpbot
+    spec:
+      containers:
+      - name: main
+        resources: {}
+status: {}
