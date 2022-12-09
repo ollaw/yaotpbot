@@ -18,6 +18,7 @@ spec:
         app: yaotpbot
     spec:
       containers:
-      - name: main
+      - image: registry.gitlab.com/ollaww/yaotpbot:0.0.1
+        name: main
         resources: {}
 status: {}
