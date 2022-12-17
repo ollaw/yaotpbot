@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "yaotpbot"
 description = "A telegram bot to generate OTPs"
+authors = [
+  { name="Olla Gabriele", email="ollagabriele@pm.me" },
+]
 readme = "README.md"
 requires-python = ">=3.7"
 keywords = ["telegram-bot", "otp"]
