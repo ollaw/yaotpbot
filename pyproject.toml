@@ -14,6 +14,7 @@ dependencies = [
     "boto3 >= 1.24.60",
     "pyotp >= 2.6.0",
     "flake8 >= 5.0.4",
+    "cryptography < 3.4",
     "dynamodb-encryption-sdk >= 3.1.0"
 ]
 dynamic = ["version"]
