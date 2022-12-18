@@ -1,0 +1,32 @@
+{
+    "variable": {
+      "TAG": {
+        "default": "latest"
+      },
+      "REGISTRY": {
+        "default" : "registry.gitlab.com/ollaww/yaotpbot"
+      }
+    },
+    "group": {
+      "default": {
+        "targets": [
+          "yaotpbot"
+        ]
+      }
+    },
+    "target": {
+      "yaotpbot": {
+        "tags": [
+          "${REGISTRY}:${TAG}",
+          "${REGISTRY}:latest"
+        ],
+        "context": ".",
+        "platforms": [
+          "linux/amd64",
+          "linux/arm/v7"
+        ],
+        "cache-from": ["type=local,src=.buildx-cache"],
+        "cache-to": ["type=local,dest=.buildx-cache"]
+      }
+  }
+}

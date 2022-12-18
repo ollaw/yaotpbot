@@ -1,0 +1,7 @@
+.gitlab/**
+dist/**
+.vscode/**
+gitops-artifacts/**
+.buildx-cache/**
+.gitlab-ci.yml
+docker-compose.yml
