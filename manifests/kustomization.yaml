@@ -8,4 +8,4 @@ resources:
 images:
 - name: main
   newName: registry.gitlab.com/ollaww/yaotpbot
-  newTag: 0.0.2
+  newTag: 0.0.4
