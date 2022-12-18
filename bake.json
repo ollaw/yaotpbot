@@ -25,6 +25,7 @@
           "linux/amd64",
           "linux/arm/v7"
         ],
+        "target": "runner",
         "cache-from": ["type=local,src=.buildx-cache"],
         "cache-to": ["type=local,dest=.buildx-cache"]
       }

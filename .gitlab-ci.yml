@@ -28,6 +28,7 @@ build-whl:
   variables:
     POETRY_VIRTUALENVS_IN_PROJECT: "true"
   before_script:
+    - apt update && apt install -y git
     - pip3 install --upgrade build
   script:
     - python3 -m build
