@@ -20,5 +20,17 @@ spec:
       containers:
         - name: main
           image: main
-          resources: {}
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          env:
+          - name: AWS_DEFAULT_REGION
+            value: eu-central-1
+          envFrom:
+          - secretRef:
+              name: yaotpbot-tokens
 status: {}
