@@ -83,7 +83,7 @@ pypi-publish:
 
 
 docker-publish:
-  stage: build
+  stage: docker-publish
   image: data61/magda-builder-docker
   variables:
     DOCKER_HOST: tcp://docker:2375/
