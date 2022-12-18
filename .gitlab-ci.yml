@@ -14,7 +14,8 @@ cache:
 stages:
   - test
   - build
-  - publish
+  - pypi-publish
+  - docker-publish
   - gitops
 
 sast:
@@ -41,8 +42,30 @@ build-whl:
     - changes:
       - otpbot/**/*
 
-publish:
-  stage: publish
+docker:
+  stage: build
+  image: data61/magda-builder-docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    TAG: ${CI_COMMIT_REF_NAME}
+  services:
+    - docker:dind
+  script:
+    - echo ${CI_REGISTRY_PASSWORD} | docker login -u ${CI_REGISTRY_USER} ${CI_REGISTRY} --password-stdin
+    - docker pull ${CI_REGISTRY_IMAGE}:latest || true
+    - docker context create builder-context
+    - docker buildx create --name builderx --driver docker-container --use builder-context
+    - docker buildx bake -f bake.json yaotpbot-builder
+  cache:
+    key: docker-cache
+    paths:
+      - .buildx-cache/
+  except:
+    - tags
+
+pypi-publish:
+  stage: pypi-publish
   image: python:3-slim
   variables:
     POETRY_VIRTUALENVS_IN_PROJECT: "true"
@@ -59,7 +82,7 @@ publish:
     - branches
 
 
-docker:
+docker-publish:
   stage: build
   image: data61/magda-builder-docker
   variables:

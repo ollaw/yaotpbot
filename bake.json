@@ -1,33 +1,60 @@
 {
-    "variable": {
-      "TAG": {
-        "default": "latest"
-      },
-      "REGISTRY": {
-        "default" : "registry.gitlab.com/ollaww/yaotpbot"
-      }
+  "variable": {
+    "TAG": {
+      "default": "latest"
     },
-    "group": {
-      "default": {
-        "targets": [
-          "yaotpbot"
-        ]
-      }
+    "REGISTRY": {
+      "default": "registry.gitlab.com/ollaww/yaotpbot"
+    }
+  },
+  "group": {
+    "default": {
+      "targets": [
+        "yaotpbot"
+      ]
     },
-    "target": {
-      "yaotpbot": {
-        "tags": [
-          "${REGISTRY}:${TAG}",
-          "${REGISTRY}:latest"
-        ],
-        "context": ".",
-        "platforms": [
-          "linux/amd64",
-          "linux/arm/v7"
-        ],
-        "target": "runner",
-        "cache-from": ["type=local,src=.buildx-cache"],
-        "cache-to": ["type=local,dest=.buildx-cache"]
-      }
+    "builder": {
+      "targets": [
+        "yaotpbot-builder"
+      ]
+    }
+  },
+  "target": {
+    "yaotpbot": {
+      "tags": [
+        "${REGISTRY}:${TAG}",
+        "${REGISTRY}:latest"
+      ],
+      "context": ".",
+      "platforms": [
+        "linux/amd64",
+        "linux/arm/v7"
+      ],
+      "target": "runner",
+      "cache-from": [
+        "type=local,src=.buildx-cache"
+      ],
+      "cache-to": [
+        "type=local,dest=.buildx-cache"
+      ]
+    },
+    "yaotpbot-builder": {
+      "tags": [
+        "${REGISTRY}:${TAG}",
+        "${REGISTRY}:latest"
+      ],
+      "context": ".",
+      "platforms": [
+        "linux/amd64",
+        "linux/arm/v7"
+      ],
+      "target": "builder",
+      "cache-from": [
+        "type=local,src=.buildx-cache"
+      ],
+      "cache-to": [
+        "type=local,dest=.buildx-cache"
+      ]
+    }
   }
 }
