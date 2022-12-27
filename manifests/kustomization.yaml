@@ -3,9 +3,18 @@ kind: Kustomization
 resources:
 - deployment.yml
 - encrypted-secret.yml
+- network-policy.yml
+
+namespace: yaotpbot
+
+commonLabels:
+  app: yaotpbot
+
 
 # Do not edit the following, is managed by CI and will be overwritten
 images:
 - name: main
   newName: registry.gitlab.com/ollaww/yaotpbot
   newTag: 0.0.4
+
+

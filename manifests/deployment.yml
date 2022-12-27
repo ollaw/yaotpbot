@@ -1,9 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
-  labels:
-    app: yaotpbot
   name: yaotpbot
 spec:
   replicas: 1
@@ -33,4 +30,3 @@ spec:
           envFrom:
           - secretRef:
               name: yaotpbot-tokens
-status: {}
