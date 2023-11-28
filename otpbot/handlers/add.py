@@ -8,7 +8,7 @@ from telegram.ext import (
     CallbackQueryHandler,
     CommandHandler,
     ConversationHandler,
-    Filters,
+    filters,
     MessageHandler,
 )
 
@@ -32,7 +32,8 @@ def cbk_add(update: Update, context: CallbackContext) -> int:
         if msg := update.callback_query.message:
             context.bot.send_message(
                 chat_id=msg.chat.id,
-                text="Let's insert a new one. How should we call it? 💬\n" "Run /cancel command to abort.",
+                text="Let's insert a new one. How should we call it? 💬\n"
+                "Run /cancel command to abort.",
             )
             return ST_ADD_NAME
         else:
@@ -52,13 +53,19 @@ def cbk_on_name(update: Update, context: CallbackContext) -> int:
 
 def cbk_on_otp(update: Update, context: CallbackContext) -> int:
 
-    if (msg := update.message) and (txt := msg.text) and ((userdata := context.user_data) is not None):
+    if (
+        (msg := update.message)
+        and (txt := msg.text)
+        and ((userdata := context.user_data) is not None)
+    ):
         try:
             otp = pyotp.TOTP(txt)
             otp.now()
         except Error:
             name = userdata[USER_DATA_KEY_ADD_NAME]
-            msg = msg.reply_text(f"😨😨 Oooops! Seems like this seed is invalid.\nInsert again the seed for {name} 🎲🎲")
+            msg = msg.reply_text(
+                f"😨😨 Oooops! Seems like this seed is invalid.\nInsert again the seed for {name} 🎲🎲"
+            )
             userdata[USER_DATA_KEY_ADD_MSG_ID] = msg.message_id
             return ST_ADD_OPT
 
@@ -78,7 +85,9 @@ def cbk_on_otp(update: Update, context: CallbackContext) -> int:
         )
         return ConversationHandler.END
 
-    logger.error("Called cbk_on_otp with no message or no text on message or no user data.")
+    logger.error(
+        "Called cbk_on_otp with no message or no text on message or no user data."
+    )
     return -1
 
 
@@ -86,8 +95,8 @@ def cnvs_hdl_add() -> ConversationHandler:
     return ConversationHandler(
         entry_points=[CallbackQueryHandler(cbk_add, pattern=CBK_DATA_ADD)],
         states={
-            ST_ADD_NAME: [MessageHandler(Filters.text & ~Filters.command, cbk_on_name)],
-            ST_ADD_OPT: [MessageHandler(Filters.text & ~Filters.command, cbk_on_otp)],
+            ST_ADD_NAME: [MessageHandler(filters.text & ~filters.command, cbk_on_name)],
+            ST_ADD_OPT: [MessageHandler(filters.text & ~filters.command, cbk_on_otp)],
         },
         fallbacks=[CommandHandler(CMD_CANCEL, cbk_cancel)],
     )

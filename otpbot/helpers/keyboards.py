@@ -29,7 +29,13 @@ def default_keyboard() -> InlineKeyboardMarkup:
     Default keyboard.
     """
     return _keyboard(
-        [[(BTN_ADD_LABEL, CBK_DATA_ADD), (BTN_REMOVE_LABEL, CBK_DATA_REMOVE_LIST), (BTN_LIST_LABEL, CBK_DATA_LIST)]]
+        [
+            [
+                (BTN_ADD_LABEL, CBK_DATA_ADD),
+                (BTN_REMOVE_LABEL, CBK_DATA_REMOVE_LIST),
+                (BTN_LIST_LABEL, CBK_DATA_LIST),
+            ]
+        ]
     )
 
 
@@ -44,7 +50,14 @@ def show_keyboard(name: str) -> InlineKeyboardMarkup:
     """
     Keyboard used when a single OTP value is shown.
     """
-    return _keyboard([[(BTN_REFRESH_LABEL, f"{CBK_DATA_REFRESH}__{name}"), (BTN_BACK_LABEL, CBK_DATA_LIST)]])
+    return _keyboard(
+        [
+            [
+                (BTN_REFRESH_LABEL, f"{CBK_DATA_REFRESH}__{name}"),
+                (BTN_BACK_LABEL, CBK_DATA_LIST),
+            ]
+        ]
+    )
 
 
 def ls_keyboard(chat_id: str) -> InlineKeyboardMarkup:
@@ -65,7 +78,9 @@ def rm_keyboard() -> InlineKeyboardMarkup:
     """
     Keyboard used to confirm the deletion of an OTP.
     """
-    return _keyboard([[(BTN_REMOVE_Y_LABEL, CBK_DATA_RM_Y), (BTN_REMOVE_N_LABEL, CBK_DATA_RM_N)]])
+    return _keyboard(
+        [[(BTN_REMOVE_Y_LABEL, CBK_DATA_RM_Y), (BTN_REMOVE_N_LABEL, CBK_DATA_RM_N)]]
+    )
 
 
 def _keyboard(args: List[List[Tuple[str, str]]]) -> InlineKeyboardMarkup:
@@ -84,7 +99,9 @@ def _keyboard(args: List[List[Tuple[str, str]]]) -> InlineKeyboardMarkup:
     InlineKeyboardMarkup
         _description_
     """
-    return InlineKeyboardMarkup([[InlineKeyboardButton(k[0], callback_data=k[1]) for k in j] for j in args])
+    return InlineKeyboardMarkup(
+        [[InlineKeyboardButton(k[0], callback_data=k[1]) for k in j] for j in args]
+    )
 
 
 def _ls_keyboard_helper(chat_id: str, cbk_prefix: str) -> InlineKeyboardMarkup:

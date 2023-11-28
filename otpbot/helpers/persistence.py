@@ -18,14 +18,15 @@ from ..helpers.crypto import wrapped_material_provider
 logger = logging.getLogger(__name__)
 
 dynamo = boto3.resource("dynamodb", endpoint_url=os.getenv(DYNAMO_ENDPOINT_ENV_VAR))
-client_crypto = EncryptedResource(resource=dynamo, materials_provider=wrapped_material_provider).Table(
-    DYNAMO_TABLE_NAME
-)
+client_crypto = EncryptedResource(
+    resource=dynamo, materials_provider=wrapped_material_provider
+).Table(DYNAMO_TABLE_NAME)
 
 
 def get(chat_id: str, otp_name: str) -> str:
     if query := client_crypto.query(
-        KeyConditionExpression=Key("id").eq(f"{chat_id}") & Key("name").eq(f"{otp_name}"),
+        KeyConditionExpression=Key("id").eq(f"{chat_id}")
+        & Key("name").eq(f"{otp_name}"),
     )["Items"]:
         return query[0]["seed"]
     else:
@@ -45,7 +46,8 @@ def put(chat_id: str, otp_name: str, seed: str):
 
 def exists(chat_id: str, otp_name: str) -> bool:
     query = client_crypto.query(
-        KeyConditionExpression=Key("id").eq(f"{chat_id}") & Key("name").eq(f"{otp_name}"),
+        KeyConditionExpression=Key("id").eq(f"{chat_id}")
+        & Key("name").eq(f"{otp_name}"),
     )
     return "Items" in query
 

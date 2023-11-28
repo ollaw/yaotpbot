@@ -25,7 +25,11 @@ def cbk_rm_ls(update: Update, context: CallbackContext) -> None:
 
 
 def cbk_rm(update: Update, context: CallbackContext) -> None:
-    if (cbk := update.callback_query) and (data := cbk.data) and (userdata := context.user_data):
+    if (
+        (cbk := update.callback_query)
+        and (data := cbk.data)
+        and (userdata := context.user_data)
+    ):
         name = "__".join(data.split("__")[1:])
         if msg := cbk.message:
             if persistence.exists(str(msg.chat_id), name):
@@ -45,7 +49,9 @@ def cbk_rm(update: Update, context: CallbackContext) -> None:
                     reply_markup=default_keyboard(),
                 )
     else:
-        logger.error("Called cbk_on_otp with no message or no text on message or no user data.")
+        logger.error(
+            "Called cbk_on_otp with no message or no text on message or no user data."
+        )
 
 
 def cbk_rm_confirm_y(update: Update, context: CallbackContext) -> None:

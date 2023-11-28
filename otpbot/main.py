@@ -53,14 +53,24 @@ def main() -> None:
     dispatcher.add_handler(CallbackQueryHandler(cbk_ls, pattern=CBK_DATA_LIST))
 
     # Manage remove
-    dispatcher.add_handler(CallbackQueryHandler(cbk_rm_ls, pattern=CBK_DATA_REMOVE_LIST))
+    dispatcher.add_handler(
+        CallbackQueryHandler(cbk_rm_ls, pattern=CBK_DATA_REMOVE_LIST)
+    )
     dispatcher.add_handler(CallbackQueryHandler(cbk_rm, pattern=CBK_DATA_REMOVE))
-    dispatcher.add_handler(CallbackQueryHandler(cbk_rm_confirm_y, pattern=CBK_DATA_RM_Y))
-    dispatcher.add_handler(CallbackQueryHandler(cbk_rm_confirm_n, pattern=CBK_DATA_RM_N))
+    dispatcher.add_handler(
+        CallbackQueryHandler(cbk_rm_confirm_y, pattern=CBK_DATA_RM_Y)
+    )
+    dispatcher.add_handler(
+        CallbackQueryHandler(cbk_rm_confirm_n, pattern=CBK_DATA_RM_N)
+    )
 
     # Manage show
-    dispatcher.add_handler(CallbackQueryHandler(cbk_show, pattern=f"{CBK_DATA_SHOW}__.*"))
-    dispatcher.add_handler(CallbackQueryHandler(cbk_refresh, pattern=f"{CBK_DATA_REFRESH}__.*"))
+    dispatcher.add_handler(
+        CallbackQueryHandler(cbk_show, pattern=f"{CBK_DATA_SHOW}__.*")
+    )
+    dispatcher.add_handler(
+        CallbackQueryHandler(cbk_refresh, pattern=f"{CBK_DATA_REFRESH}__.*")
+    )
 
     # Start the Bot
     updater.start_polling()

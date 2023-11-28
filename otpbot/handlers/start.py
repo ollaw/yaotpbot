@@ -8,7 +8,9 @@ def cbk_home(update: Update, context: CallbackContext) -> None:
     if cbk := update.callback_query:
         context.bot.answer_callback_query(cbk.id)
         if update.message:
-            update.message.reply_text("Choose somethind to do!", reply_markup=default_keyboard())
+            update.message.reply_text(
+                "Choose somethind to do!", reply_markup=default_keyboard()
+            )
         elif msg := cbk.message:
             context.bot.edit_message_text(
                 chat_id=msg.chat.id,

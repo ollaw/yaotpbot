@@ -17,7 +17,9 @@ def check_environments():
 
 def _check_token():
     if os.getenv(TOKEN_ENV_VAR) is None:
-        logger.error(f"Environment variable {TOKEN_ENV_VAR} must be set with valid Telegram Token.")
+        logger.error(
+            f"Environment variable {TOKEN_ENV_VAR} must be set with valid Telegram Token."
+        )
         exit(-1)
 
 
@@ -38,9 +40,9 @@ def _check_keys():
             "\nYou can use following python script to generate one:\n\nimport os,base64\nbase64.b64encode(os.urandom(16)).decode('utf-8')"
         )
         exit(-1)
-    if (len(base64.b64decode(os.getenv(CRYPTO_ENCRYPTION_ENV_VAR))) not in [16, 24, 32]) or (
-        len(base64.b64decode(os.getenv(CRYPTO_SIGN_ENV_VAR))) not in [16, 24, 32]
-    ):
+    if (
+        len(base64.b64decode(os.getenv(CRYPTO_ENCRYPTION_ENV_VAR))) not in [16, 24, 32]
+    ) or (len(base64.b64decode(os.getenv(CRYPTO_SIGN_ENV_VAR))) not in [16, 24, 32]):
         logger.error(
             f"{CRYPTO_ENCRYPTION_ENV_VAR} or {CRYPTO_SIGN_ENV_VAR} has invalid length."
             "\nValid length are 128,192 or 256 bits."
