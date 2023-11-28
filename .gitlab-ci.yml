@@ -112,7 +112,7 @@ update-manifests:
     name: alpine/git:v2.30.2
     entrypoint: [""]
   before_script:
-    - apk add curl bash
+    - apk update && apk add curl bash && apk upgrade
     - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash -s /usr/local/bin/
     - git clone "https://${GITLAB_USER_NAME}:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "${CI_COMMIT_SHA}"
     - git config --global user.email "${GIT_USER_EMAIL:-$GITLAB_USER_EMAIL}"
