@@ -24,7 +24,7 @@ spec:
         envFrom:
         - secretRef:
             name: yaotpbot-tokens
-        image: registry.gitlab.com/ollaww/yaotpbot:0.0.5
+        image: registry.gitlab.com/ollaww/yaotpbot:0.0.6
         name: main
         resources:
           limits:
