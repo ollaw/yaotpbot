@@ -19,11 +19,11 @@ spec:
           image: main
           resources:
             requests:
-              cpu: "250m"
-              memory: "256Mi"
+              cpu: "50m"
+              memory: "64Mi"
             limits:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: "100m"
+              memory: "128Mi"
           env:
           - name: AWS_DEFAULT_REGION
             value: eu-central-1
