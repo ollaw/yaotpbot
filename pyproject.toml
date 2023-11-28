@@ -13,12 +13,12 @@ requires-python = ">=3.7"
 keywords = ["telegram-bot", "otp"]
 license = {text = "MIT"}
 dependencies = [
-    "python-telegram-bot >= 13.13",
-    "boto3 >= 1.24.60",
-    "pyotp >= 2.6.0",
-    "flake8 >= 5.0.4",
+    "python-telegram-bot ~= 13.13",
+    "boto3 ~= 1.24.60",
+    "pyotp ~= 2.6.0",
+    "flake8 ~= 5.0.4",
     "cryptography == 3.3.2",
-    "dynamodb-encryption-sdk >= 3.1.0"
+    "dynamodb-encryption-sdk ~= 3.1.0"
 ]
 dynamic = ["version"]
 

@@ -8,7 +8,7 @@ from telegram.ext import (
     CallbackQueryHandler,
     CommandHandler,
     ConversationHandler,
-    filters,
+    Filters,
     MessageHandler,
 )
 
@@ -95,8 +95,8 @@ def cnvs_hdl_add() -> ConversationHandler:
     return ConversationHandler(
         entry_points=[CallbackQueryHandler(cbk_add, pattern=CBK_DATA_ADD)],
         states={
-            ST_ADD_NAME: [MessageHandler(filters.text & ~filters.command, cbk_on_name)],
-            ST_ADD_OPT: [MessageHandler(filters.text & ~filters.command, cbk_on_otp)],
+            ST_ADD_NAME: [MessageHandler(Filters.text & ~Filters.command, cbk_on_name)],
+            ST_ADD_OPT: [MessageHandler(Filters.text & ~Filters.command, cbk_on_otp)],
         },
         fallbacks=[CommandHandler(CMD_CANCEL, cbk_cancel)],
     )
