@@ -121,7 +121,7 @@ update-manifests:
   script:
     - pwd
     - kustomize edit set image main=${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
-    - kustomize build . > ../gitops-artitfacts/manifest.yml
+    - kustomize build . > ../gitops-artifacts/manifest.yml
   after_script:
     - pwd
     - cd ${CI_COMMIT_SHA}
