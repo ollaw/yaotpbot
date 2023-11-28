@@ -15,4 +15,4 @@ commonLabels:
 images:
 - name: main
   newName: registry.gitlab.com/ollaww/yaotpbot
-  newTag: 0.0.8
+  newTag: 0.0.9
