@@ -3,5 +3,8 @@ dist/**
 .vscode/**
 gitops-artifacts/**
 .buildx-cache/**
+pulumi/**
 .gitlab-ci.yml
 docker-compose.yml
+localstack-setup
+Makefile

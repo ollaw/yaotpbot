@@ -1,14 +1,45 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI version](https://badge.fury.io/py/yaotpbot.svg)](https://badge.fury.io/py/yaotpbot) [![Gitlab pipeline status](https://gitlab.com/ollaww/yaotpbot/badges/main/pipeline.svg)](https://gitlab.com/ollaww/yaotpbot) [![Python code style](https://img.shields.io/badge/code_style-black-000000.svg)](https://github.com/ambv/black)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![PyPI version](https://badge.fury.io/py/yaotpbot.svg)](https://badge.fury.io/py/yaotpbot)  [![Python code style](https://img.shields.io/badge/code_style-black-000000.svg)](https://github.com/ambv/black)
+
+
+
 
 # Yet Another OTP Bot
 
-A Telegram Bot to generate OTPs.
+[@yaotpbot](https://t.me/yaotpbot) : A Telegram Bot to generate OTPs.
 
-[@yaotpbot](https://t.me/yaotpbot)
+**Disclaimer: This project is intended as a toy project and should not be used for serious or production purposes. The author does not recommend using this for any critical applications.**
+
+
 
 ## Architecture
 
-![Architecture of bot](/docs/architecture.png "High level architecture")
+```mermaid
+flowchart LR;
+
+T[Telegram Server]
+
+D[Dynamo DB]
+
+subgraph K[Kubernetes Cluster]
+    direction TB
+    Y[Yaotpbot]
+    GO[Gitlab Operator]
+    GO -->|Deploy and sync| Y
+end
+
+subgraph G[GitLab]
+    direction TB
+    R[Repository]
+    RE[Container Registry]
+    R -->|CI| RE
+
+end
+
+K -.->|Poll update| T
+D <---> |Store and retrieve| K
+K -.-> |Watch and sync| G
+```
+
 
 ### Software
 Yaotpbot is written in Python and use [telegram-bot-api](https://github.com/python-telegram-bot/python-telegram-bot) to interact with Telegram.
@@ -35,7 +66,7 @@ Note that following environment variables must be set:
 | Name        | Description |
 |---------------------------|---|
 | TELEGRAM_API_TOKEN       | Telegram Api Token of your bot needed to interact with Telegram. You always get a new one when [creating a new bot](https://core.telegram.org/bots/api). |
-| DYNAMO_DB_ENDPOINT       | A custom DynamoDB endpoint when not using AWS. By default the bot looks for a table called `yaotpbot-table` using the credentials provided. |
+| LOCALSTACK_ENDPOINT       | A localstack endpoint to use when not using AWS. By default the bot looks for a table called `yaotpbot-table` and use `sts` to verify the connection. |
 | DYNAMO_AES_SIGN_KEY       | Key used to sign encrypted data stored on DynamoDB. Can be generated running `python scrips/keys.py` |
 | DYNAMO_AES_ENCRYPTION_KEY | Key used to encrypt data stored on DynamoDB. Can be generated running `python scrips/keys.py` |
 | AWS_ACCESS_KEY_ID         | AWS access key id. Used with `AWS_SECRET_ACCESS_KEY` to interact with DynamoDB. |

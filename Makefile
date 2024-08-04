@@ -7,9 +7,6 @@ install:
 	poetry run pip install --upgrade pip
 	poetry install -v
 
-update: ## Update python dependencies
-	poetry update
-
 format: ## Format repository code
 	poetry run black $(CHECK_DIRS)
 	poetry run isort $(CHECK_DIRS)

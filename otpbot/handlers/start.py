@@ -4,17 +4,15 @@ from telegram.ext import CallbackContext
 from ..helpers.keyboards import default_keyboard
 
 
-def cbk_home(update: Update, context: CallbackContext) -> None:
+async def cbk_home(update: Update, _: CallbackContext) -> None:
     if cbk := update.callback_query:
-        context.bot.answer_callback_query(cbk.id)
+        await cbk.answer()
         if update.message:
-            update.message.reply_text(
+            await update.message.reply_text(
                 "Choose somethind to do!", reply_markup=default_keyboard()
             )
-        elif msg := cbk.message:
-            context.bot.edit_message_text(
-                chat_id=msg.chat.id,
-                message_id=msg.message_id,
+        elif cbk.message:
+            await cbk.edit_message_text(
                 text="Choose somethind to do!",
                 reply_markup=default_keyboard(),
             )
