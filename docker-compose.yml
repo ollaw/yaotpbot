@@ -1,36 +1,30 @@
 version: '3.1'
 services:
+  
   bot:
     build:
       context: .
     user: root
     environment:
-      - TELEGRAM_API_TOKEN
-      - AWS_PROFILE
-      - AWS_DEFAULT_REGION=eu-central-1
-      - DYNAMO_DB_ENDPOINT=http://dynamodb:8000
-      - DYNAMO_AES_ENCRYPTION_KEY='4YY5yXS6nUrS8Z/6lDNGAg=='
-      - DYNAMO_AES_SIGN_KEY='6PjwVFTXQqt1xbNrgxqJyg=='
-    volumes:
-      - $HOME/.aws/credentials:/root/.aws/credentials:ro
+      TELEGRAM_API_TOKEN:
+      AWS_ACCESS_KEY_ID: XXX
+      AWS_SECRET_ACCESS_KEY: XXX
+      AWS_DEFAULT_REGION: us-east-1
+      LOCALSTACK_ENDPOINT: http://localstack:4566
+      DYNAMO_AES_ENCRYPTION_KEY: '4YY5yXS6nUrS8Z/6lDNGAg=='
+      DYNAMO_AES_SIGN_KEY: '6PjwVFTXQqt1xbNrgxqJyg=='
     depends_on:
-      - "dynamodb"
-      - "init-dynamodb"
-  init-dynamodb:
-    image: amazon/aws-cli
+      localstack:
+        condition: service_healthy
+  
+  localstack:
+    image: localstack/localstack:latest
     environment:
-      - AWS_DEFAULT_REGION=eu-central-1
-      - AWS_PROFILE
-    command: dynamodb create-table --cli-input-json file:///tmp/localdb-table.json --endpoint-url http://dynamodb:8000
-    volumes:
-      - $HOME/.aws/credentials:/root/.aws/credentials:ro
-      - ./localdb-table.json:/tmp/localdb-table.json:ro
-    depends_on:
-      - "dynamodb"
-  dynamodb:
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ."
-    image: "amazon/dynamodb-local:latest"
-    container_name: dynamodb
+      SERVICES: dynamodb,sts
     ports:
-      - "8000:8000"
-    working_dir: /home/dynamodblocal
+      - 4566:4566
+    volumes:
+      - ./localstack-setup.sh:/etc/localstack/init/ready.d/script.sh
+    healthcheck:
+      test: ["CMD", "bash", "-c", "awslocal dynamodb list-tables | grep -q yaotpbot-table"]
+      start_period: 5s

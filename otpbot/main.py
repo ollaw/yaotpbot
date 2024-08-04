@@ -1,7 +1,7 @@
 import logging
 import os
 
-from telegram.ext import CallbackQueryHandler, CommandHandler, Updater
+from telegram.ext import ApplicationBuilder, CallbackQueryHandler, CommandHandler
 
 from .cmds.help import cmd_help
 from .cmds.start import cmd_start
@@ -32,50 +32,42 @@ def main() -> None:
 
     check_environments()
 
-    """Start the bot."""
-    updater = Updater(os.getenv(TOKEN_ENV_VAR))
-
-    # Get the dispatcher to register handlers
-    dispatcher = updater.dispatcher
+    """Build the bot application."""
+    application = ApplicationBuilder().token(os.environ[TOKEN_ENV_VAR]).build()
 
     # -- Commands
-    dispatcher.add_handler(CommandHandler(CMD_START, cmd_start))
-    dispatcher.add_handler(CommandHandler(CMD_HELP, cmd_help))
+    application.add_handler(CommandHandler(CMD_START, cmd_start))
+    application.add_handler(CommandHandler(CMD_HELP, cmd_help))
 
     # -- Conversation handlers
-    dispatcher.add_handler(cnvs_hdl_add())  # add
+    application.add_handler(cnvs_hdl_add())  # add
 
     # -- Callback query
 
     # Back home callback
-    dispatcher.add_handler(CallbackQueryHandler(cbk_home, pattern=CBK_DATA_HOME))
+    application.add_handler(CallbackQueryHandler(cbk_home, pattern=CBK_DATA_HOME))
     # List applications callback
-    dispatcher.add_handler(CallbackQueryHandler(cbk_ls, pattern=CBK_DATA_LIST))
+    application.add_handler(CallbackQueryHandler(cbk_ls, pattern=CBK_DATA_LIST))
 
     # Manage remove
-    dispatcher.add_handler(
+    application.add_handler(
         CallbackQueryHandler(cbk_rm_ls, pattern=CBK_DATA_REMOVE_LIST)
     )
-    dispatcher.add_handler(CallbackQueryHandler(cbk_rm, pattern=CBK_DATA_REMOVE))
-    dispatcher.add_handler(
+    application.add_handler(CallbackQueryHandler(cbk_rm, pattern=CBK_DATA_REMOVE))
+    application.add_handler(
         CallbackQueryHandler(cbk_rm_confirm_y, pattern=CBK_DATA_RM_Y)
     )
-    dispatcher.add_handler(
+    application.add_handler(
         CallbackQueryHandler(cbk_rm_confirm_n, pattern=CBK_DATA_RM_N)
     )
 
     # Manage show
-    dispatcher.add_handler(
+    application.add_handler(
         CallbackQueryHandler(cbk_show, pattern=f"{CBK_DATA_SHOW}__.*")
     )
-    dispatcher.add_handler(
+    application.add_handler(
         CallbackQueryHandler(cbk_refresh, pattern=f"{CBK_DATA_REFRESH}__.*")
     )
 
     # Start the Bot
-    updater.start_polling()
-
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
-    updater.idle()
+    application.run_polling()

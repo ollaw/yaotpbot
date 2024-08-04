@@ -4,7 +4,12 @@ import os
 
 import boto3
 
-from ..constant import CRYPTO_ENCRYPTION_ENV_VAR, CRYPTO_SIGN_ENV_VAR, TOKEN_ENV_VAR
+from ..constant import (
+    CRYPTO_ENCRYPTION_ENV_VAR,
+    CRYPTO_SIGN_ENV_VAR,
+    LOCALSTACK_ENDPOINT_ENV_VAR,
+    TOKEN_ENV_VAR,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -24,12 +29,13 @@ def _check_token():
 
 
 def _check_credentials():
-    sts = boto3.client("sts")
+    sts = boto3.client("sts", endpoint_url=os.getenv(LOCALSTACK_ENDPOINT_ENV_VAR))
     try:
         sts.get_caller_identity()
         logger.info("Valid AWS credentials found.")
-    except Exception:
+    except Exception as e:
         logger.error("AWS credentials are not set or invalid.")
+        logger.error(e)
         exit(-1)
 
 

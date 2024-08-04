@@ -8,8 +8,8 @@ from telegram.ext import (
     CallbackQueryHandler,
     CommandHandler,
     ConversationHandler,
-    Filters,
     MessageHandler,
+    filters,
 )
 
 from ..constant import (
@@ -26,11 +26,11 @@ from ..helpers import keyboards, persistence
 logger = logging.getLogger(__name__)
 
 
-def cbk_add(update: Update, context: CallbackContext) -> int:
+async def cbk_add(update: Update, context: CallbackContext) -> int:
     if cbk := update.callback_query:
-        context.bot.answer_callback_query(cbk.id)
+        await cbk.answer()
         if msg := update.callback_query.message:
-            context.bot.send_message(
+            await context.bot.send_message(
                 chat_id=msg.chat.id,
                 text="Let's insert a new one. How should we call it? 💬\n"
                 "Run /cancel command to abort.",
@@ -41,17 +41,19 @@ def cbk_add(update: Update, context: CallbackContext) -> int:
     return -1
 
 
-def cbk_on_name(update: Update, context: CallbackContext) -> int:
+async def cbk_on_name(update: Update, context: CallbackContext) -> int:
     if (oldmsg := update.message) and ((userdata := context.user_data) is not None):
         userdata[USER_DATA_KEY_ADD_NAME] = update.message.text
-        msg = oldmsg.reply_text(f"Great! Now insert the OTP seed for {oldmsg.text} 🎲🎲")
+        msg = await oldmsg.reply_text(
+            f"Great! Now insert the OTP seed for {oldmsg.text} 🎲🎲"
+        )
         userdata[USER_DATA_KEY_ADD_MSG_ID] = msg.message_id
         return ST_ADD_OPT
     logger.error("Called cbk_on_name with no message")
     return -1
 
 
-def cbk_on_otp(update: Update, context: CallbackContext) -> int:
+async def cbk_on_otp(update: Update, context: CallbackContext) -> int:
 
     if (
         (msg := update.message)
@@ -63,7 +65,7 @@ def cbk_on_otp(update: Update, context: CallbackContext) -> int:
             otp.now()
         except Error:
             name = userdata[USER_DATA_KEY_ADD_NAME]
-            msg = msg.reply_text(
+            msg = await msg.reply_text(
                 f"😨😨 Oooops! Seems like this seed is invalid.\nInsert again the seed for {name} 🎲🎲"
             )
             userdata[USER_DATA_KEY_ADD_MSG_ID] = msg.message_id
@@ -74,12 +76,12 @@ def cbk_on_otp(update: Update, context: CallbackContext) -> int:
             userdata[USER_DATA_KEY_ADD_NAME],
             str(txt),
         )
-        context.bot.delete_message(
+        await context.bot.delete_message(
             chat_id=msg.chat.id,
             message_id=userdata[USER_DATA_KEY_ADD_MSG_ID],
         )
-        msg.delete()
-        msg.reply_text(
+        await msg.delete()
+        await msg.reply_text(
             "🥳🥳 OTP successfully added.. I hid the seed for you 🤐\n" "What now?",
             reply_markup=keyboards.default_keyboard(),
         )
@@ -95,8 +97,8 @@ def cnvs_hdl_add() -> ConversationHandler:
     return ConversationHandler(
         entry_points=[CallbackQueryHandler(cbk_add, pattern=CBK_DATA_ADD)],
         states={
-            ST_ADD_NAME: [MessageHandler(Filters.text & ~Filters.command, cbk_on_name)],
-            ST_ADD_OPT: [MessageHandler(Filters.text & ~Filters.command, cbk_on_otp)],
+            ST_ADD_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, cbk_on_name)],
+            ST_ADD_OPT: [MessageHandler(filters.TEXT & ~filters.COMMAND, cbk_on_otp)],
         },
         fallbacks=[CommandHandler(CMD_CANCEL, cbk_cancel)],
     )

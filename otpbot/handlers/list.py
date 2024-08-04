@@ -8,14 +8,12 @@ from ..helpers.keyboards import ls_keyboard
 logger = logging.getLogger(__name__)
 
 
-def cbk_ls(update: Update, context: CallbackContext) -> None:
+async def cbk_ls(update: Update, _: CallbackContext) -> None:
     if cbk := update.callback_query:
-        context.bot.answer_callback_query(cbk.id)
+        await cbk.answer()
         if msg := cbk.message:
-            context.bot.edit_message_text(
+            await cbk.edit_message_text(
                 "Select the application to show 👀",
-                chat_id=msg.chat.id,
-                message_id=msg.message_id,
                 reply_markup=ls_keyboard(str(msg.chat.id)),
             )
         else:

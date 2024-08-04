@@ -10,14 +10,14 @@ from ..constant import (
     DYNAMO__KEY_ID,
     DYNAMO__KEY_NAME,
     DYNAMO__KEY_SEED,
-    DYNAMO_ENDPOINT_ENV_VAR,
     DYNAMO_TABLE_NAME,
+    LOCALSTACK_ENDPOINT_ENV_VAR,
 )
 from ..helpers.crypto import wrapped_material_provider
 
 logger = logging.getLogger(__name__)
 
-dynamo = boto3.resource("dynamodb", endpoint_url=os.getenv(DYNAMO_ENDPOINT_ENV_VAR))
+dynamo = boto3.resource("dynamodb", endpoint_url=os.getenv(LOCALSTACK_ENDPOINT_ENV_VAR))
 client_crypto = EncryptedResource(
     resource=dynamo, materials_provider=wrapped_material_provider
 ).Table(DYNAMO_TABLE_NAME)
