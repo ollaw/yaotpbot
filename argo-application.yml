@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yaoptbot
+  namespace: argo
+  labels:
+    app: yaoptbot
+spec:
+  project: default
+
+  source:
+    repoURL: https://gitlab.com/ollaww/yaotpbot.git
+    targetRevision: main 
+    path: gitops-artifacts
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: yaotpbot
+
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
